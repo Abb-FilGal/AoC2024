@@ -1,17 +1,17 @@
 import re
 
-Done = False
-while not Done:
-    with open ("day-3/input.txt", "r+") as f:  
-        content = f.read()
-        match = re.search(r"don\'t\(\)(.*?)do\(\)", content)
-        if match != None:
-            print(match.span()[0], match.span()[1])
-            newcontent = content[:match.span()[0]] + content[match.span()[1]:]
-            # print(newcontent)
-            f.seek(0)
-            f.write(re.sub(r"<string>ABC</string>(\s+)<string>(.*)</string>", r"<xyz>ABC</xyz>\1<xyz>\2</xyz>", newcontent))
-            f.truncate()
-        else:
-            Done = True
-    
+with open("day-3/input.txt") as f:
+    mem = f.read()
+
+
+def fixmem(s):
+    return sum((int(x) * int(y) for x, y in re.findall(r"mul\((\d+),(\d+)\)", s)))
+
+
+print("part one answer:", fixmem(mem))
+
+first, *rest = mem.split("don't()")
+print(
+    "part two answer:",
+    fixmem(first) + sum((fixmem("".join(chunk.split("do()")[1:])) for chunk in rest)),
+)
